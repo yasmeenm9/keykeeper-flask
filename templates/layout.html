@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}KeyKeeper{% endblock %}</title>
+
+    <!-- Universal base styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/base.css') }}">
+
+    <!-- Page-specific styles -->
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <!-- Universal Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+         <!--  <a href="{{ url_for('dashboard') }}" class="logo">🔐 KeyKeeper</a>--> 
+        </div>
+        <div class="nav-right">
+            {% if request.endpoint == 'view_passwords' %}
+            <form action="{{ url_for('search_passwords') }}" method="GET" class="search-form">
+                <input type="text" name="query" placeholder="Search passwords..." required>
+                <button type="submit">Search</button>
+            </form>
+            {% endif %}
+
+            <button id="darkModeToggle">🌙</button>
+
+            <a href="{{ url_for('profile') }}" class="profile-icon">👤</a>
+        </div>
+    </nav>
+
+    <!-- Page-specific content -->
+    {% block content %}{% endblock %}
+
+    <!-- Optional: Add a small script for dark mode toggle -->
+    <script>
+        const toggle = document.getElementById("darkModeToggle");
+    
+        // On click, toggle theme and save preference
+        toggle?.addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+            const isDark = document.body.classList.contains("dark-mode");
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+        });
+    
+        // On page load, apply saved theme
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "dark") {
+                document.body.classList.add("dark-mode");
+            }
+        });
+    </script>
+    
+</body>
+</html>

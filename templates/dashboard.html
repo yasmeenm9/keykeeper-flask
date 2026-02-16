@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard | KeyKeeper{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2 class="greeting">Welcome back, {{ current_user.username }} 👋</h2>
+
+    <div class="dashboard-actions">
+        <a href="{{ url_for('add_password') }}" class="action-card">
+            <div class="icon">➕</div>
+            <div class="label">Add Password</div>
+        </a>
+        <a href="{{ url_for('view_passwords') }}" class="action-card">
+            <div class="icon">🔍</div>
+            <div class="label">View Passwords</div>
+        </a>
+        <a href="{{ url_for('logout') }}" class="action-card logout">
+            <div class="icon">🚪</div>
+            <div class="label">Log Out</div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+

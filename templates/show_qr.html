@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Code Login | KeyKeeper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/base.css') }}">
+    <style>
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+        .qr-code {
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .instructions {
+            margin: 20px 0;
+            color: #666;
+            max-width: 500px;
+        }
+        .timer {
+            font-size: 1.2em;
+            color: #333;
+            margin: 10px 0;
+        }
+        .refresh-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .refresh-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="qr-container">
+        <h1>Scan QR Code to Login</h1>
+        <div class="instructions">
+            <p>1. Open the KeyKeeper app on your mobile device</p>
+            <p>2. Point your camera at this QR code</p>
+            <p>3. Follow the instructions on your device to complete login</p>
+        </div>
+        <div class="qr-code">
+            <img src="{{ url_for('generate_qr', raw='true') }}" alt="Login QR Code">
+        </div>
+        <div class="timer" id="timer">Code expires in: 5:00</div>
+        <button onclick="window.location.reload()" class="refresh-btn">Refresh QR Code</button>
+        <a href="{{ url_for('login') }}" style="margin-top: 20px; color: #007bff;">Back to Login</a>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timeLeft = 300; // 5 minutes in seconds
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Code expires in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                window.location.reload();
+            } else {
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            }
+        }
+
+        updateTimer();
+    </script>
+</body>
+</html> 

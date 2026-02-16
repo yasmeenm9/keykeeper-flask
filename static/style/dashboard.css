@@ -1,0 +1,61 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+}
+
+.dashboard-container {
+    max-width: 900px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 2rem;
+}
+
+.greeting {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    justify-items: center;
+}
+
+.action-card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, background 0.3s;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    background-color: var(--accent-bg);
+}
+
+.icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.8rem;
+}
+
+.label {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.logout {
+    background-color: #f9ebeb;
+}
+
+.logout:hover {
+    background-color: #f9e2e2;
+}
+

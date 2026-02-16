@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block title %}Home | KeyKeeper{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/home.css') }}">
+<!-- AOS Library -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Secure All Your Passwords in One Place</h1>
+        <p>KeyKeeper is your smart, secure and easy-to-use password manager.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('register') }}" class="btn primary">Get Started</a>
+            <a href="{{ url_for('login') }}" class="btn secondary">Login</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='images/vault.jpg') }}" alt="Secure Vault">
+    </div>
+</section>
+
+<section class="features">
+    <h2>What is a Password Manager?</h2>
+    <div class="feature-cards">
+        <div class="card">Save all your passwords safely</div>
+        <div class="card">Login with just one master key</div>
+        <div class="card">Auto-generate strong passwords</div>
+    </div>
+</section>
+
+<section class="why-keykeeper">
+    <h2>Why Choose KeyKeeper?</h2>
+    <ul>
+        <li>Encrypted storage with Fernet</li>
+        <li>QR login for faster access</li>
+        <li>Beautiful and intuitive dashboard</li>
+    </ul>
+</section>
+
+<section class="cta">
+    <h2>Start securing your digital life</h2>
+    <a href="{{ url_for('register') }}" class="btn primary">Try KeyKeeper Now</a>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+<section class="hero" data-aos="fade-up">
+    <!-- content -->
+    </section>
+    
+    <section class="features" data-aos="zoom-in">
+    <!-- content -->
+    </section>
+    
+    <section class="why-keykeeper" data-aos="fade-right">
+    <!-- content -->
+    </section>
+    
+    <section class="cta" data-aos="zoom-out">
+    <!-- content -->
+    </section>
+    
+{% endblock %}
+

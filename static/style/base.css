@@ -1,0 +1,61 @@
+/* ---- Base Theme ---- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana,sans-serif;
+    background-color: #f9fafc;
+    background-color: #f5f7fa;
+    color: #333;
+}
+/* base.css */
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.navbar.dark-mode,
+.dashboard-container.dark-mode {
+    background-color: #1f1f1f;
+    color: #fff;
+}
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Add more dark-mode-specific styles as needed */
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+/* Main content spacing */
+.main-content {
+    padding: 30px 60px;
+}
+
+/* Optional animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

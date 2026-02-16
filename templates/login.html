@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Login | KeyKeeper{% endblock %}
+{% block extra_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/login.css') }}">
+{% endblock %}
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <h1>Welcome Back 👋</h1>
+        <p class="subtitle">Login to your KeyKeeper Vault</p>
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Master Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="login-actions">
+                <button type="submit" class="btn-primary">Login</button>
+                <a href="{{ url_for('generate_qr') }}" class="btn-secondary">Login via QR</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

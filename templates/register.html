@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Register | KeyKeeper{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/register.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container" data-aos="fade-up">
+    <h2>Create Your Account</h2>
+    <form action="{{ url_for('register') }}" method="POST" class="auth-form">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn primary">Register</button>
+    </form>
+    <p class="switch-auth">Already have an account? 
+        <a href="{{ url_for('login') }}">Login here</a>
+    </p>
+</div>
+{% endblock %}
+
