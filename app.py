@@ -1,16 +1,11 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify, send_file
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import secrets
 import string
-import qrcode
-import io
 import os
 from dotenv import load_dotenv
-from itsdangerous import URLSafeTimedSerializer
-from datetime import datetime, timedelta
-from cryptography.fernet import Fernet
 
 load_dotenv()
 app=Flask(__name__)
@@ -23,7 +18,6 @@ app.config['SECRET_KEY'] =os.getenv("SECRET_KEY") or 'your_secret_key_here'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
-serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # --- Login Manager ---
 login_manager = LoginManager(app)
@@ -45,14 +39,6 @@ class PasswordEntry(db.Model):
     site_password = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
   # email = db.Column(db.String(150), nullable=False)
-
-class QRToken(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(100), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    expires_at = db.Column(db.DateTime, nullable=False)
-    is_used = db.Column(db.Boolean, default=False)
 
 # --- Load User ---
 @login_manager.user_loader
@@ -76,9 +62,12 @@ def test_db():
 @login_required
 def profile():
    return render_template('profile.html', user=current_user)
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    print("REGISTER ROUTE HIT")
     if request.method == 'POST':
+        print("POST RECEIVED")
         email = request.form['email']
         username = request.form['username']
         password = request.form['password']
@@ -138,59 +127,70 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+
+    total_passwords = PasswordEntry.query.filter_by(
+        user_id=current_user.id
+    ).count()
+
+    return render_template(
+        'dashboard.html',
+        total_passwords=total_passwords
+    )
 
 @app.route('/view_passwords', methods=['GET', 'POST'])
 @login_required
 def view_passwords():
-    passwords = []
     if request.method == 'POST':
         query = request.form['query']
+
         passwords = PasswordEntry.query.filter(
             PasswordEntry.user_id == current_user.id,
-            (PasswordEntry.site_name.ilike(f"%{query}%")) |
-            (PasswordEntry.site_username.ilike(f"%{query}%"))
+            (
+                PasswordEntry.site_name.ilike(f"%{query}%")
+            ) |
+            (
+                PasswordEntry.site_username.ilike(f"%{query}%")
+            )
         ).all()
-    else:
-        passwords = PasswordEntry.query.filter_by(user_id=current_user.id).all()
-    return render_template('view_passwords.html', passwords=passwords)
-    decrypted_passwords = []
-    for p in passwords:
-        decrypted_passwords.append({
-        'id': p.id,
-        'website': p.website,
-        'username': p.username,
-        'password': fernet.decrypt(p.password.encode()).decode()
-    })
-    
-    
 
+    else:
+        passwords = PasswordEntry.query.filter_by(
+            user_id=current_user.id
+        ).all()
+
+    return render_template(
+        'view_passwords.html',
+        passwords=passwords
+    )
+    
 @app.route('/add_password', methods=['GET', 'POST'])
 @login_required
 def add_password():
+
     if request.method == 'POST':
+
         site_name = request.form['site_name']
         site_username = request.form['site_username']
         site_password = request.form['site_password']
+
         new_entry = PasswordEntry(
             site_name=site_name,
             site_username=site_username,
             site_password=site_password,
-            user_id=current_user.id,
-           # email=current_user.email
+            user_id=current_user.id
         )
+
         db.session.add(new_entry)
         db.session.commit()
-        flash('Password added successfully!', 'success')
+
+        flash(
+            'Password added successfully!',
+            'success'
+        )
+
         return redirect(url_for('dashboard'))
+
     return render_template('add_password.html')
-    encrypted_password = fernet.encrypt(password.encode()).decode()
-    new_password = Password(
-    website=website,
-    username=username,
-    password=encrypted_password,
-    user_id=current_user.id)
-    
 
 @app.route('/edit_password/<int:entry_id>', methods=['GET', 'POST'])
 @login_required
@@ -230,61 +230,6 @@ def generate_password():
     password = ''.join(secrets.choice(characters) for _ in range(length))
     return jsonify({'password': password})
 
-@app.route('/generate_qr')
-def generate_qr():
-    if request.args.get('raw') == 'true':
-        # Generate and return raw QR code image
-        qr_data = url_for('qr_auth', _external=True)
-        img = qrcode.make(qr_data)
-        buffer = io.BytesIO()
-        img.save(buffer, 'PNG')
-        buffer.seek(0)
-        return send_file(buffer, mimetype='image/png')
-    else:
-        # Show the QR code page
-        return render_template('show_qr.html')
-
-@app.route('/qr_auth', methods=['GET', 'POST'])
-def qr_auth():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        if not email:
-            flash("Email is required.", "error")
-            return redirect(url_for('qr_auth'))
-
-        user = User.query.filter_by(email=email).first()
-        if user:
-            print(f"[QR AUTH] Found user: {user.email}")
-            login_user(user)
-            flash("QR login successful!", "success")
-            return redirect(url_for('dashboard'))
-        else:
-            flash("No user found with this email.", "error")
-            return redirect(url_for('qr_auth'))
-
-    return render_template('qr_auth.html')
-
-@app.route('/qr_scanner')
-def qr_scanner():
-    token = request.args.get('token')
-    if not token:
-        return redirect(url_for('login'))
-    return render_template('qr_scanner.html', token=token)
-
-@app.route('/check_qr_status/<token>')
-def check_qr_status(token):
-    stored_token = session.get('qr_token')
-    token_time = datetime.fromisoformat(session.get('qr_token_time', datetime.utcnow().isoformat()))
-    
-    if not stored_token or stored_token != token:
-        return jsonify({'status': 'invalid'})
-    
-    # Check if token is expired (5 minutes)
-    token_age = datetime.utcnow() - token_time
-    if token_age.total_seconds() > 300:  # 5 minutes
-        return jsonify({'status': 'expired'})
-    
-    return jsonify({'status': 'valid'})
 
 @app.route("/change_password", methods=["POST"])
 @login_required
@@ -322,6 +267,11 @@ def delete_account():
         flash('Your account has been permanently deleted.', 'info')
         return redirect(url_for('login'))
     return render_template('delete_account.html')
+
+@app.route('/users')
+def users():
+    users = User.query.all()
+    return str([(u.username, u.email) for u in users])
 
 # --- Run App ---
 if __name__ == '__main__':

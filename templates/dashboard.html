@@ -9,6 +9,9 @@
 {% block content %}
 <div class="dashboard-container">
     <h2 class="greeting">Welcome back, {{ current_user.username }} 👋</h2>
+    <h3>Total Passwords Stored:
+            {{ total_passwords }}
+    </h3>
 
     <div class="dashboard-actions">
         <a href="{{ url_for('add_password') }}" class="action-card">

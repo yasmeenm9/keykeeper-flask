@@ -4,27 +4,26 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import secrets
 import string
-#mport qrcode
+import qrcode
 import io
 import os
 from dotenv import load_dotenv
 from itsdangerous import URLSafeTimedSerializer
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
-import os
 
 load_dotenv()
 app=Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+#app.secret_key = os.getenv("SECRET_KEY") or "super_secret_dev_key"
 #fernet = Fernet(os.environ.get("SECRET_KEY"))
 # --- Configuration ---
 #app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///keykeeper.db'
-#app.config['SECRET_KEY'] = 'your_secret_key_here'
+app.config['SECRET_KEY'] =os.getenv("SECRET_KEY") or 'your_secret_key_here'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
-serializer = URLSafeTimedSerializer(app.secret_key)
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # --- Login Manager ---
 login_manager = LoginManager(app)
@@ -326,6 +325,10 @@ def delete_account():
 
 # --- Run App ---
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-with app.app_context():
-    db.create_all()
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
+
+#if __name__ == '__main__':
+#    app.run(host='0.0.0.0', port=5000, debug=True)
+#with app.app_context():
+ #   db.create_all()
