@@ -57,6 +57,7 @@ https://keykeeper-flask.onrender.com
 
 ## 📂 Project Structure
 
+```text
 RTRP/
 │
 ├── app.py
@@ -70,6 +71,7 @@ RTRP/
 ├── templates/
 │
 └── screenshots/
+```
 
 ## ⚙️ Local Setup
 
@@ -101,8 +103,9 @@ python app.py
 
 The application will be available at:
 
+```text
 http://127.0.0.1:10000
-
+```
 
 ---
 
